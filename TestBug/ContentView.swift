@@ -7,8 +7,13 @@
 
 import SwiftUI
 
+struct MyItem: Identifiable {
+    let id = UUID()
+    let name: String
+}
+
 struct ContentView: View {
-  @State private var show: Bool = false
+  @State private var selection: MyItem? = nil
     var body: some View {
       VStack {
         Image(systemName: "globe")
@@ -16,12 +21,11 @@ struct ContentView: View {
           .foregroundColor(.accentColor)
         Text("Hello, world!")
         Button("Open Sheet") {
-          self.show = true
+          self.selection = MyItem(name: "blah")
         }
-        .padding(10).border(show ? Color.red : Color.clear)
-        .sheet(isPresented: $show,
+        .sheet(item: $selection,
                onDismiss: { print("finished!") },
-               content: { MySheet() })
+               content: { MySheet(item: $0) })
       
         }
         .padding()
@@ -29,12 +33,14 @@ struct ContentView: View {
 }
 
 struct MySheet: View {
+  let item: MyItem
   	@State private var day: String = ""
     @Environment (\.presentationMode) var presentationMode
 
     var body: some View {
         VStack(spacing: 20) {
           Spacer()
+          Text("Item: \(item.name)")
           Menu(content: menuContents, label: menuLabel)
               .frame(width: 200)
             Text("Drag down to dismiss..., or")
